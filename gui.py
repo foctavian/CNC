@@ -1,56 +1,32 @@
-from PyQt5 import QtCore, QtGui, QtWidgets, uic
-from PyQt5.QtWidgets import  QApplication, QWidget, QVBoxLayout, QHBoxLayout, QTextEdit, QPushButton, QGraphicsView, QGraphicsScene
-from PyQt5.QtGui import QPainter, QPen, QColor
-from PyQt5.QtCore import Qt
-import sys
+from math import floor
+import tkinter as tk
+import canvas
 
-class Point:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
+class Entry:
+    def __init__(self, root):
+        self.entry = tk.Entry(root, width = 40)
+        self.entry.pack(side=tk.BOTTOM)
 
-_WIDTH = 640
-_HEIGTH = 480
+class Window():
+    def send_command():
+        pass
 
-class Canvas(QtWidgets.QLabel):
-    
     def __init__(self):
-        super().__init__()
-        pixmap = QtGui.QPixmap(_WIDTH, _HEIGTH)
-        pixmap.fill(Qt.white)
-        self.setPixmap(pixmap)
+        self.root = tk.Tk()
+        self.root.title("CNC")
 
-class Window(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("CNC")
-        self.main_layout = QHBoxLayout()
-        self.left_layout = QVBoxLayout()
-        self.right_layout = QVBoxLayout()
-        self.text_area = QTextEdit()
-        self.text_area.setReadOnly(True)
-        drawing_space = Canvas()
-        
-        self.right_layout.addWidget(drawing_space)
-        self.input_area = QTextEdit()
-        self.send_button = QPushButton("Send")
+        self.canvas = canvas.Canvas(self.root)
+        self.text_area = tk.Text(self.root, width = 40, height=20)
+        self.text_area.pack(side = tk.LEFT)
+        self.send_button = tk.Button(self.root, text="Send", command=self.send_command)
+        self.entry = Entry(self.root)
+        self.send_button.pack(side=tk.BOTTOM)
 
-
-        self.left_layout.addWidget(self.text_area)
-        self.left_layout.addWidget(self.input_area)
-        self.left_layout.addWidget(self.send_button)
-
-        self.main_layout.addLayout(self.left_layout)
-        self.main_layout.addLayout(self.right_layout)
-        self.setLayout(self.main_layout)
 
 
 def main():
-    app = QApplication(sys.argv)
     window = Window()
-    window.setGeometry(100, 100, 400, 400)
-    window.showMaximized()
-    sys.exit(app.exec_())
+    window.root.mainloop()
 
 
 if __name__=="__main__":
