@@ -1,0 +1,31 @@
+    def draw_sinusoidal_wave(self, amplitude, frequency, num_points):
+        points = []
+
+        for i in range(num_points):
+            x = (i / num_points) * _WIDTH
+            y = _HEIGTH / 2 - amplitude * math.sin(2 * math.pi * frequency * (x / _WIDTH))
+            points.append((x, y))
+
+        self.canvas.create_line(points, fill="blue")
+
+
+    def draw_cos_wave(self, amplitude, frequency, num_points):
+        points = []
+
+        for i in range(num_points):
+            x = (i/num_points) * _WIDTH
+            y = _HEIGTH / 2 - amplitude * math.cos(2*math.pi*frequency*(x/_WIDTH))
+            points.append((x,y))
+        self.canvas.create_line(points, fill = 'blue')
+
+
+    def arc_interpolation(self, x, y, radius, start_angle, end_angle, no_points=300):
+        start_angle_rad = math.radians(start_angle)
+        end_angle_rad = math.radians(end_angle)
+
+        step = (end_angle_rad-start_angle_rad)/no_points
+        print(step)
+
+        x_values = [x+radius*math.cos(start_angle_rad + i*step) for i in range(no_points)]
+        y_values = [y+radius*math.sin(start_angle_rad + i*step) for i in range(no_points)]
+        return  zip(x_values, y_values)
