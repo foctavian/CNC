@@ -25,8 +25,8 @@ class Canvas:
     def draw_interpolated_line(self, list):
         size = 2
         for x,y in list:
-            (x,y) = self._center(x,y)
             #print(f"{x}  {y}")
+            (x,y) = self._center(x,y)
             time.sleep(0.05)
             self.canvas.create_oval(x,y,x+size, y+size, fill = 'black', width=size)
             self.canvas.update()

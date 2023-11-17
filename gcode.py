@@ -33,18 +33,16 @@ def parser(command : str):
     elif low[0] == "absolute":
         return Gcode(GCODES["absolute"])
     elif low[0] == "line":
-        x=[]
-        y=[]
+        x=0
+        y=0
         for i in range(1,len(low)):
             if low[i].startswith("x"):
                 try:
-                    float(low[i][1:])
-                    x.append(float(low[i][1:]))
+                    x = (float(low[i][1:]))
                 except: Gcode(GCODES["error"])
-            elif low[i].startswith("x"):
+            elif low[i].startswith("y"):
                 try:
-                    float(low[i][1:])
-                    y.append(float(low[i][1:]))
+                    y = (float(low[i][1:]))
                 except: Gcode(GCODES["error"])
         return Gcode(GCODES["line"], x, y)
     elif low[0] == "home":
