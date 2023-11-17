@@ -1,11 +1,14 @@
+import time
 import tkinter as tk
 from numerical_control import Interpolation 
 import math
+from time import sleep
 
 _HEIGTH = 640
 _WIDTH = 640
 _CENTERX = _WIDTH/2
 _CENTERY = _HEIGTH/2
+
 
 class Canvas:
     def __init__(self,root):
@@ -13,9 +16,8 @@ class Canvas:
         self.clear_button = tk.Button(root, text = "Clear", command = self.clear_canvas)
         self.canvas.grid(column=5, columnspan=5)
         self._axis()
-       # self.draw_interpolated_line(Interpolation().liniar_interpolation(-50,125,55, -100))
+        #self.draw_interpolated_line(Interpolation().liniar_interpolation(-50,125,55, -100))
         #self.draw_interpolated_line(Interpolation().circular_interpolation(-100,50,40))
-        self.draw_interpolated_line(Interpolation().arc_interpolation(100,-20,40,40,100))
 
     def draw(event):
         x,y = event.x, event.y
@@ -25,9 +27,11 @@ class Canvas:
         for x,y in list:
             (x,y) = self._center(x,y)
             #print(f"{x}  {y}")
+            time.sleep(0.05)
             self.canvas.create_oval(x,y,x+size, y+size, fill = 'black', width=size)
-    
-
+            self.canvas.update()
+        
+            
     def clear_canvas(canvas):
         canvas.delete('all')
 

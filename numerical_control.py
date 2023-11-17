@@ -1,8 +1,14 @@
 from math import floor
 import math
 
+_ABSOLUTE = 0
+_RELATIVE = 1
+_LAST_LOC = (0.0,0.0)
+_MODE = _ABSOLUTE
+
 class Interpolation():
     def __init__(self):
+        self._set_addressing() # sets the default addressing to absolute
         pass
 
     def liniar_interpolation(self, x1, y1, x2, y2):
@@ -11,11 +17,13 @@ class Interpolation():
             if no_points > 0:
                 x_values = [x1 + (i* (x2-x1)/no_points) for i in range(no_points+1)]
                 y_values = [y1 + (i* (y2-y1)/no_points) for i in range(no_points+1)]
+                _LAST_LOC = (x_values[len(x_values)-1], y_values[len(y_values)-1])
                 return zip(x_values, y_values)
             
     def circular_interpolation(self,x,y,radius,num_points=360):
         x_values = [x+radius*math.cos(math.radians(i)) for i in range(num_points)]
         y_values = [y+radius*math.sin(math.radians(i)) for i in range(num_points)]
+        _LAST_LOC = (x_values[len(x_values)-1], y_values[len(y_values)-1])
         return zip(x_values, y_values)
     
     def arc_interpolation(self, x, y, radius, start_angle, end_angle):
@@ -28,7 +36,11 @@ class Interpolation():
         if no_points > 0 : 
             x_values = [x + radius *math.cos(start_angle_rad + i*step_size) for i in range (no_points)]
             y_values = [y + radius *math.sin(start_angle_rad + i*step_size) for i in range (no_points)]
+            _LAST_LOC = (x_values[len(x_values)-1], y_values[len(y_values)-1])
             return zip(x_values, y_values)
 
-        
+    ### PRIVATE METHODS ###
 
+    #changes the default mode of addressing 
+    def _set_addressing(mode = _ABSOLUTE):
+        _MODE = mode
