@@ -16,21 +16,24 @@ class Canvas:
         self.clear_button = tk.Button(root, text = "Clear", command = self.clear_canvas)
         self.canvas.grid(column=5, columnspan=5)
         self._axis()
-        #self.draw_interpolated_line(Interpolation().liniar_interpolation(-50,125,55, -100))
-        #self.draw_interpolated_line(Interpolation().circular_interpolation(-100,50,40))
 
     def draw(event):
         x,y = event.x, event.y
 
-    def draw_interpolated_line(self, list):
+    def draw_interpolated_line(self, list, rapid):
         size = 2
         for x,y in list:
             #print(f"{x}  {y}")
             (x,y) = self._center(x,y)
-            time.sleep(0.05)
             self.canvas.create_oval(x,y,x+size, y+size, fill = 'black', width=size)
-            self.canvas.update()
-        
+            
+            #fastline or slowline
+            if rapid:
+                self.canvas.update()
+            else:
+                self.canvas.update()
+
+                sleep(0.05)
             
     def clear_canvas(canvas):
         canvas.delete('all')

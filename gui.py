@@ -1,12 +1,12 @@
 from math import floor
 import tkinter as tk
 from canvas import Canvas
-from numerical_control import Interpolation
+from numerical_control import Interpolation, _RELATIVE, _ABSOLUTE
 from gcode import GCODES, parser
 import queue
 '''
 TODO 
-implement absolute and relative coords  []
+implement absolute and relative coords  [x]
 implement interface commands            []
 implement gcode file writes             []
 refactor classes                        [x]
@@ -81,17 +81,19 @@ def execute_queue(q, canvas):
         cmd = q.get(0)
         #print(cmd.get_code())
         if cmd.get_code() == GCODES["line"]:
-            canvas.draw_interpolated_line(interp.liniar_interpolation(cmd.x, cmd.y))
+            canvas.draw_interpolated_line(interp.liniar_interpolation(cmd.x, cmd.y), False)
         elif cmd.get_code() == GCODES["arc clockwise"]:
             pass
         elif cmd.get_code() == GCODES["arc counterclockwise"]:
             pass
         elif cmd.get_code() == GCODES["absolute"]:
-            pass
+            interp._set_addressing(_ABSOLUTE)
         elif cmd.get_code() == GCODES["relative"]:
-            pass
+            interp._set_addressing(_RELATIVE)
         elif cmd.get_code() == GCODES["home"]:
-            pass
+            interp.home()
+        elif cmd.get_code() == GCODES["fastline"]:
+            canvas.draw_interpolated_line(interp.liniar_interpolation(cmd.x, cmd.y), True)
 
 def main():
     window = Window()
