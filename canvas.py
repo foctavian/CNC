@@ -16,6 +16,7 @@ class Canvas:
         self.clear_button = tk.Button(root, text = "Clear", command = self.clear_canvas)
         self.canvas.grid(column=5, columnspan=5)
         self._axis()
+        
 
     def draw(event):
         x,y = event.x, event.y

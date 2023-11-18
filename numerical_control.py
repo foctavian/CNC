@@ -36,18 +36,22 @@ class Interpolation():
         #_LAST_LOC = (x_values[len(x_values)-1], y_values[len(y_values)-1])
         return zip(x_values, y_values)
     
-    def arc_interpolation(self, x, y, radius, start_angle, end_angle):
+    def arc_interpolation(self, x, y,i,j):
+        radius = self._compute_radius(i,j)
         no_points = 360
-        start_angle_rad = math.radians(start_angle)/no_points
-        end_angle_rad = math.radians(end_angle)/no_points
+        
+        current_angle = math.atan2(self._LASTY,self._LASTX)
+        final_angle = math.atan2(y,x)
+        step_size = (final_angle-current_angle)/no_points
 
-        step_size = (end_angle_rad-start_angle_rad)
-
+        self._LASTX = x  # Update _LASTX
+        self._LASTY = y  # Update _LASTY
         if no_points > 0 : 
-            x_values = [x + radius *math.cos(start_angle_rad + i*step_size) for i in range (no_points)]
-            y_values = [y + radius *math.sin(start_angle_rad + i*step_size) for i in range (no_points)]
-            #_LAST_LOC = (x_values[len(x_values)-1], y_values[len(y_values)-1])
+            x_values = [x + radius *math.cos(current_angle + i*step_size) for i in range (no_points)]
+            y_values = [y + radius *math.sin(current_angle + i*step_size) for i in range (no_points)]
             return zip(x_values, y_values)
+        
+
 
     def home(self):
         self._LASTX = 0.0
@@ -57,3 +61,13 @@ class Interpolation():
     #changes the default mode of addressing 
     def _set_addressing(self,mode = _RELATIVE):
         _MODE = mode
+
+    #compute the radius used for circular interpolation 
+    def _compute_radius(self,i,j,x1=None,y1=None):
+        if self._MODE == _RELATIVE:
+            if x1 is None and y1 is None :
+                x1 = self._LASTX
+                y1 = self._LASTY
+        else : x1 = 0.0; y1 = 0.0
+
+        return math.sqrt((x1-i)**2 + (y1-j)**2)

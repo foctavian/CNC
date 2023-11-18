@@ -11,6 +11,7 @@ implement interface commands            []
 implement gcode file writes             []
 refactor classes                        [x]
 add config file for project settings    [] 
+last location update method             []
 '''
 
 interp = Interpolation()
@@ -42,7 +43,7 @@ class Window():
     def send_command(self):
         print(self.get_text(self.entry))
         cmd = parser(self.get_text(self.entry))
-        print(cmd.get_code())
+        #print(cmd.get_code())
         if cmd.get_code() == GCODES["error"] : 
             self.text_area.insert('end', str(Window.text_line_cnt) + '>> ')
             Window.text_line_cnt += 1
@@ -61,8 +62,7 @@ class Window():
         elif event.keysym == 'Delete': #delete key
             self.text_area.delete('1.0', 'end')
             Window.text_line_cnt = 0
-        elif event.keysym == 'F5':
-            #start the queue of execution
+        elif event.keysym == 'F5': #execute queue
             execute_queue(self.q, self.canvas)
         
 
@@ -82,9 +82,9 @@ def execute_queue(q, canvas):
         #print(cmd.get_code())
         if cmd.get_code() == GCODES["line"]:
             canvas.draw_interpolated_line(interp.liniar_interpolation(cmd.x, cmd.y), False)
-        elif cmd.get_code() == GCODES["arc clockwise"]:
-            pass
         elif cmd.get_code() == GCODES["arc counterclockwise"]:
+            canvas.draw_interpolated_line(interp.arc_interpolation(cmd.x,cmd.y,cmd.i,cmd.j), True)
+        elif cmd.get_code() == GCODES["arc clockwise"]:
             pass
         elif cmd.get_code() == GCODES["absolute"]:
             interp._set_addressing(_ABSOLUTE)

@@ -12,11 +12,12 @@ GCODES = {
 }
 
 class Gcode():
-    def __init__(self,code, x=0, y=0) : 
+    def __init__(self,code, x=0, y=0, i=0, j=0) : 
         self.code = code
         self.x = x
         self.y = y
-
+        self.i=i
+        self.j=j
 
 
     def __str__(self) -> str:
@@ -50,14 +51,38 @@ def parser(command : str):
     elif low[0] == "home":
         return Gcode("home")
     elif low[0] == "arc":
+        x=0
+        y=0
+        k=0 #instead of i because i was already in the existing code
+        j=0
         if low[1] == "clockwise":
-            pass
+           pass
         elif low[1] == "counterclockwise":
-            pass
+            
+            for i in range(1,len(low)):
+                if low[i].startswith("x"):
+                    try:
+                        x = (float(low[i][1:]))
+                    except: Gcode(GCODES["error"])
+                elif low[i].startswith("y"):
+                    try:
+                        y = (float(low[i][1:]))
+                    except: Gcode(GCODES["error"])
+                elif low[i].startswith("i"):
+                    try:
+                        k = (float(low[i][1:]))
+                    except: Gcode(GCODES["error"])
+                elif low[i].startswith("j"):
+                    try:
+                        j = (float(low[i][1:]))
+                    except: Gcode(GCODES["error"])
+            return Gcode(GCODES["arc counterclockwise"], x, y,k,j)
+            
     elif low[0] == "fastline":
         x=0
         y=0
-        for i in range(1,len(low)):
+        
+        for i in range(1,len(low)): # TODO : BEAUTIFY THIS
             if low[i].startswith("x"):
                 try:
                     x = (float(low[i][1:]))
@@ -66,7 +91,8 @@ def parser(command : str):
                 try:
                     y = (float(low[i][1:]))
                 except: Gcode(GCODES["error"])
-        return Gcode(GCODES["fastline"], x, y )
+            
+        return Gcode(GCODES["fastline"], x, y)
     else:
         return Gcode(GCODES["error"])
 
