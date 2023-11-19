@@ -19,8 +19,7 @@ class Interpolation():
                 y1 = self._LASTY
             else: x1 = 0.0; y1 = 0.0
 
-        self._LASTX = x2  # Update _LASTX
-        self._LASTY = y2  # Update _LASTY
+        self._update_last_location(x2,y2)
         print(f"last loc: {x1, y1}")
         if x1 is not None and y1 is not None and x2 is not None and y2 is not None:
             no_points = floor(max(abs(x2 - x1), abs(y2 - y1)))
@@ -30,10 +29,11 @@ class Interpolation():
 
                 return zip(x_values, y_values)
             
-    def circular_interpolation(self,x,y,radius,num_points=360):
+    def circular_interpolation(self,x,y,i,j,num_points=360):
+        radius = radius = self._compute_radius(i,j)
         x_values = [x+radius*math.cos(math.radians(i)) for i in range(num_points)]
         y_values = [y+radius*math.sin(math.radians(i)) for i in range(num_points)]
-        #_LAST_LOC = (x_values[len(x_values)-1], y_values[len(y_values)-1])
+        self._update_last_location(x,y)
         return zip(x_values, y_values)
     
     def arc_interpolation(self, x, y,i,j):
@@ -44,8 +44,7 @@ class Interpolation():
         final_angle = math.atan2(y,x)
         step_size = (final_angle-current_angle)/no_points
 
-        self._LASTX = x  # Update _LASTX
-        self._LASTY = y  # Update _LASTY
+        self._update_last_location(x,y)
         if no_points > 0 : 
             x_values = [x + radius *math.cos(current_angle + i*step_size) for i in range (no_points)]
             y_values = [y + radius *math.sin(current_angle + i*step_size) for i in range (no_points)]
@@ -71,3 +70,7 @@ class Interpolation():
         else : x1 = 0.0; y1 = 0.0
 
         return math.sqrt((x1-i)**2 + (y1-j)**2)
+    
+    def _update_last_location(self,x,y):
+        self._LASTX = x
+        self._LASTY = y

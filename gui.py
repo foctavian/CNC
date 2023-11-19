@@ -10,8 +10,8 @@ implement absolute and relative coords  [x]
 implement interface commands            []
 implement gcode file writes             []
 refactor classes                        [x]
-add config file for project settings    [] 
-last location update method             []
+add config file for project settings    []  optional
+last location update method             [x]
 '''
 
 interp = Interpolation()
