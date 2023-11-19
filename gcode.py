@@ -27,7 +27,7 @@ class Gcode():
     def get_code(self):
         return self.code
 
-def parser(command : str): # TODO REFACTOR THIS 
+def parser(command : str): # TODO REFACTOR THIS
 
     low = command.split(" ")
 
