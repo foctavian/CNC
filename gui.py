@@ -45,7 +45,7 @@ class Window():
     def send_command(self):
         print(self.get_text(self.entry))
         cmd = parser(self.get_text(self.entry))
-        print(cmd.get_code())
+        #print(cmd.get_code())
         if cmd.get_code() == GCODES["error"] : 
             self.text_area.insert('end', str(Window.text_line_cnt) + '>> ')
             Window.text_line_cnt += 1
@@ -135,9 +135,9 @@ def execute_queue(q, canvas):
         if cmd.get_code() == GCODES["line"]:
             canvas.draw_interpolated_line(interp.liniar_interpolation(cmd.x, cmd.y), False)
         elif cmd.get_code() == GCODES["arc counterclockwise"]:
-            canvas.draw_interpolated_line(interp.arc_interpolation(cmd.x,cmd.y,cmd.i,cmd.j), True)
+            canvas.draw_interpolated_line(interp.arc_interpolation(cmd.x,cmd.y,cmd.i,cmd.j, -1), False)
         elif cmd.get_code() == GCODES["arc clockwise"]:
-            pass
+            canvas.draw_interpolated_line(interp.arc_interpolation(cmd.x,cmd.y,cmd.i,cmd.j, 1), False)
         elif cmd.get_code() == GCODES["absolute"]:
             interp._set_addressing(_ABSOLUTE)
         elif cmd.get_code() == GCODES["relative"]:

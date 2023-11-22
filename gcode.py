@@ -57,7 +57,24 @@ def parser(command : str): # TODO REFACTOR THIS
         k=0 #instead of i because i was already in the existing code
         j=0
         if low[1] == "clockwise":
-           pass
+            for i in range(1,len(low)):
+                if low[i].startswith("x"):
+                    try:
+                        x = (float(low[i][1:]))
+                    except: Gcode(GCODES["error"])
+                elif low[i].startswith("y"):
+                    try:
+                        y = (float(low[i][1:]))
+                    except: Gcode(GCODES["error"])
+                elif low[i].startswith("i"):
+                    try:
+                        k = (float(low[i][1:]))
+                    except: Gcode(GCODES["error"])
+                elif low[i].startswith("j"):
+                    try:
+                        j = (float(low[i][1:]))
+                    except: Gcode(GCODES["error"])
+            return Gcode(GCODES["arc clockwise"], x, y,k,j) 
         elif low[1] == "counterclockwise":
             
             for i in range(1,len(low)):
@@ -78,7 +95,7 @@ def parser(command : str): # TODO REFACTOR THIS
                         j = (float(low[i][1:]))
                     except: Gcode(GCODES["error"])
             return Gcode(GCODES["arc counterclockwise"], x, y,k,j)
-            
+             
     elif low[0] == "fastline":
         x=0
         y=0

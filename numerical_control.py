@@ -36,7 +36,7 @@ class Interpolation():
         self._update_last_location(x,y)
         return zip(x_values, y_values)
     
-    def arc_interpolation(self, x, y,i,j):
+    def arc_interpolation(self, x, y,i,j, clock):
         radius = self._compute_radius(i,j)
         no_points = 360
         
@@ -46,10 +46,15 @@ class Interpolation():
 
         self._update_last_location(x,y)
         if no_points > 0 : 
-            x_values = [x + radius *math.cos(current_angle + i*step_size) for i in range (no_points)]
-            y_values = [y + radius *math.sin(current_angle + i*step_size) for i in range (no_points)]
-            return zip(x_values, y_values)
-        
+            if clock == 1:
+                x_values = [x + radius *math.cos(final_angle + i*step_size) for i in range (no_points)] #clockwise
+                y_values = [y + radius *math.sin(final_angle + i*step_size) for i in range (no_points)]
+                return zip(x_values, y_values)
+            else :
+                x_values = [x + radius *math.cos(current_angle + i*step_size) for i in range (no_points)] #counterclockwise
+                y_values = [y + radius *math.sin(current_angle + i*step_size) for i in range (no_points)]
+                return zip(x_values, y_values)
+            
 
 
     def home(self):
