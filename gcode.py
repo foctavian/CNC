@@ -18,6 +18,7 @@ class Gcode():
         self.y = y
         self.i=i
         self.j=j
+        #self.command = f"{self.code} {self.x} {self.y} {self.i} {self.j}"
 
 
     def __str__(self) -> str:

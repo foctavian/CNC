@@ -106,7 +106,11 @@ class Window():
 
         with open(file_name,"w") as gcode_file:
             tbr =text_area.get('1.0', 'end-1c')  #  '-1c' means the last line -> to be written
-            gcode_file.write(tbr)
+            tbr = tbr.split("\n")
+            for line in tbr:
+                if line[4::] == "Error: Invalid command":
+                    continue
+                gcode_file.write(str(parser(line[4::]))+"\n")
 
         messagebox.showinfo("Success", f"File saved successfully at {file_name}")
 
