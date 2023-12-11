@@ -13,7 +13,7 @@ import os
 TODO 
 implement absolute and relative coords  [x]
 implement interface commands            []
-implement gcode file writes             []
+implement gcode file writes             [x]
 refactor classes                        [x]
 add config file for project settings    []  optional
 last location update method             [x]
@@ -48,7 +48,7 @@ class Window():
 
     def send_command(self):
         cmd = parser(self.get_text(self.entry))
-        #print(cmd.get_code())
+        # print(cmd)
         if cmd.get_code() == GCODES["error"] : 
             self.text_area.insert('end', str(Window.text_line_cnt) + '>> ')
             Window.text_line_cnt += 1
@@ -90,29 +90,11 @@ class Window():
         content = file_name.read()
         self.text_area.delete('1.0', 'end')
         self.canvas.clear_canvas()
-        self.text_area.insert('end', content)
-        self.insert_into_q_from_file(content)
+        self.text_area.insert('end', "Running file: " + file_name.name + '\n', 'ok')
+        insert_into_q_from_file(self.q,content)
         execute_queue(self.q, self.canvas)
     
-    def insert_into_q_from_file(self, content):
-        for line in content.split('\n'):
-            words = line.split(' ')
-            if words[0] in GCODES.values():
-                for param in words[1::]:
-                    if param[0] == 'x':
-                        x = float(param[1::])
-                    if param[0] == 'y':
-                        y = float(param[1::])  
-                    if param[0] == 'i':
-                        i = float(param[1::])
-                    if param[0] == 'j':
-                        j = float(param[1::])
-                if words[0] == 'G02' or words[0] == 'G03':
-                    self.q.put(Gcode(words[0],x,y,i,j))
-                elif words[0] == 'G00' or words[0] == 'G01':
-                    self.q.put(Gcode(words[0]),x,y)
-                else:
-                    self.q.put(Gcode(words[0]))
+ 
      
     def save_to_file(self):
         global pop
@@ -154,7 +136,6 @@ class Window():
         return files
         
         
-
     def get_text_area(self):
         return self.text_area
 
@@ -171,7 +152,7 @@ class Window():
 def execute_queue(q, canvas):
     while not q.empty():
         cmd = q.get(0)
-        #print(cmd.get_code())
+        print(str(cmd))
         if cmd.get_code() == GCODES["line"]:
             canvas.draw_interpolated_line(interp.liniar_interpolation(cmd.x, cmd.y), False)
         elif cmd.get_code() == GCODES["arc counterclockwise"]:
@@ -187,6 +168,29 @@ def execute_queue(q, canvas):
         elif cmd.get_code() == GCODES["fastline"]:
             canvas.draw_interpolated_line(interp.liniar_interpolation(cmd.x, cmd.y), True)
 
+
+def insert_into_q_from_file(q, content):
+        for line in content.split('\n'):
+            words = line.split(' ')
+            if words[0] in GCODES.values():
+                for param in words[1::]:
+                    if param[0] == 'x':
+                        x = float(param[1::])
+                        print(x)
+                    if param[0] == 'y':
+                        y = float(param[1::])  
+                    if param[0] == 'i':
+                        i = float(param[1::])
+                    if param[0] == 'j':
+                        j = float(param[1::])
+                if words[0] == 'G02' or words[0] == 'G03':
+                    cmd  = Gcode(words[0],x,y,i,j)
+                    q.put(cmd)
+                elif words[0] == 'G00' or words[0] == 'G01':
+                    cmd = Gcode(words[0],x,y)
+                    q.put(cmd)
+                else:
+                    q.put(Gcode(words[0]))
 
 
 def main():
