@@ -12,7 +12,7 @@ GCODES = {
 }
 
 class Gcode():
-    def __init__(self,code, x=0, y=0, i=0, j=0) : 
+    def __init__(self,code, x=0, y=0, i=0, j=0): 
         self.code = code
         self.x = x
         self.y = y
@@ -20,9 +20,15 @@ class Gcode():
         self.j=j
         #self.command = f"{self.code} {self.x} {self.y} {self.i} {self.j}"
 
+    # had to change this because of the way i run files
+    # it used to not insert x{value} and the parser couldnt run the file
 
     def __str__(self) -> str:
-        return f"{self.code} {self.x} {self.y}"
+        if self.code == GCODES["line"] or self.code == GCODES["fastline"]:
+            return f"{self.code} x{self.x} y{self.y}"
+        elif self.code == GCODES["arc clockwise"] or self.code == GCODES["arc counterclockwise"]:
+            return f"{self.code} x{self.x} y{self.y} i{self.i} j{self.j}"
+        return f"{self.code}"
     
 
     def get_code(self):

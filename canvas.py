@@ -24,7 +24,6 @@ class Canvas:
     def draw_interpolated_line(self, list, rapid):
         size = 2
         for x,y in list:
-            #print(f"{x}  {y}")
             (x,y) = self._center(x,y)
             self.canvas.create_oval(x,y,x+size, y+size, fill = 'black', width=size)
             
@@ -36,9 +35,9 @@ class Canvas:
 
                 sleep(0.05)
             
-    def clear_canvas(canvas):
-        canvas.delete('all')
-
+    def clear_canvas(self):
+        self.canvas.delete("all")
+        self._axis()
 
     ### PRIVATE METHODS ###
 

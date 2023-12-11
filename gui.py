@@ -1,9 +1,11 @@
+from genericpath import isfile
 from math import floor
 import tkinter as tk
-from tkinter import Toplevel, messagebox
+from tkinter import Toplevel, messagebox,Listbox
+from tkinter.filedialog import *
 from canvas import Canvas
 from numerical_control import Interpolation, _RELATIVE, _ABSOLUTE
-from gcode import GCODES, parser
+from gcode import GCODES, Gcode, parser
 import queue
 import os
 
@@ -18,7 +20,7 @@ last location update method             [x]
 '''
 
 interp = Interpolation()
-
+dir_name = "./gcode_files"
 class Window():
     text_line_cnt = 0
     def __init__(self):
@@ -35,6 +37,8 @@ class Window():
         self.text_area.config(yscrollcommand=self.scrollbar.set)
         self.save_to_file_button = tk.Button(self.root,text = "Save to file", command=self.save_to_file)
         self.save_to_file_button.grid(row=1,column=3,columnspan=5,padx=5,pady=5)
+        self.run_file_button = tk.Button(self.root, text= "Run file", command=self.run_file)
+        self.run_file_button.grid(row=1,column=4,columnspan=5,padx=5,pady=5)
         self.entry = tk.Entry(self.root, width = 40)
         self.entry.grid(column=0,columnspan=5,row=1, padx=5, pady=5)
         self.entry.bind("<KeyRelease>", self.key_pressed)
@@ -43,7 +47,6 @@ class Window():
 
 
     def send_command(self):
-        print(self.get_text(self.entry))
         cmd = parser(self.get_text(self.entry))
         #print(cmd.get_code())
         if cmd.get_code() == GCODES["error"] : 
@@ -78,7 +81,39 @@ class Window():
             Window.text_line_cnt = 0
         elif event.keysym == 'F5': #execute queue
             execute_queue(self.q, self.canvas)
+        elif event.keysym == 'F1':
+            self.canvas.clear_canvas()
+            self.canvas._axis()
     
+    def run_file(self):
+        file_name = askopenfile(initialdir=dir_name, filetypes=[("Text files", "*.txt")])
+        content = file_name.read()
+        self.text_area.delete('1.0', 'end')
+        self.canvas.clear_canvas()
+        self.text_area.insert('end', content)
+        self.insert_into_q_from_file(content)
+        execute_queue(self.q, self.canvas)
+    
+    def insert_into_q_from_file(self, content):
+        for line in content.split('\n'):
+            words = line.split(' ')
+            if words[0] in GCODES.values():
+                for param in words[1::]:
+                    if param[0] == 'x':
+                        x = float(param[1::])
+                    if param[0] == 'y':
+                        y = float(param[1::])  
+                    if param[0] == 'i':
+                        i = float(param[1::])
+                    if param[0] == 'j':
+                        j = float(param[1::])
+                if words[0] == 'G02' or words[0] == 'G03':
+                    self.q.put(Gcode(words[0],x,y,i,j))
+                elif words[0] == 'G00' or words[0] == 'G01':
+                    self.q.put(Gcode(words[0]),x,y)
+                else:
+                    self.q.put(Gcode(words[0]))
+     
     def save_to_file(self):
         global pop
         pop = Toplevel(self.root)
@@ -94,7 +129,7 @@ class Window():
         pop_entry.bind("<KeyRelease>", self.key_pressed)
 
     def save_to_file_helper(self,file_name, text_area):
-        dir_name = "./gcode_files"
+        
         #init dir
         try:
             os.mkdir(dir_name)
@@ -110,10 +145,15 @@ class Window():
             for line in tbr:
                 if line[4::] == "Error: Invalid command":
                     continue
-                gcode_file.write(str(parser(line[4::]))+"\n")
+                gcode_file.write((str(parser(line[4::])))+"\n")
 
         messagebox.showinfo("Success", f"File saved successfully at {file_name}")
 
+    def get_files(self):
+        files = [f for f in os.listdir(dir_name) if isfile(dir_name+"/"+f)]
+        return files
+        
+        
 
     def get_text_area(self):
         return self.text_area
